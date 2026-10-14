@@ -545,14 +545,16 @@
             
             // 獎勵等級：想改門檻或獎品，只改這裡
             const REWARD_TIERS = [
-              { min: 4,  icon: '🥉', name: '暖身新星', prize: '社團貼紙' },
-              { min: 7,  icon: '🥈', name: '穩定火力', prize: '長輩圖貼紙' },
-              { min: 9,  icon: '🥇', name: '烈焰達人', prize: '明信片' },
-              { min: 11, icon: '👑', name: '全勤火神', prize: '神祕小禮物' }
+              { min: 4,  icon: '🥉', name: '暖身新星', prize: '社團貼紙',   nameEn: 'Warm-up Star',   prizeEn: 'Club sticker' },
+              { min: 7,  icon: '🥈', name: '穩定火力', prize: '長輩圖貼紙', nameEn: 'Steady Flame',   prizeEn: 'Elder-meme sticker' },
+              { min: 9,  icon: '🥇', name: '烈焰達人', prize: '明信片',     nameEn: 'Blaze Master',   prizeEn: 'Postcard' },
+              { min: 11, icon: '👑', name: '全勤火神', prize: '神祕小禮物', nameEn: 'Fire God (Perfect Attendance)', prizeEn: 'Mystery gift' }
             ];
+            function tName(t)  { return (typeof currentLang !== 'undefined' && currentLang === 'en') ? t.nameEn : t.name; }
+            function tPrize(t) { return (typeof currentLang !== 'undefined' && currentLang === 'en') ? t.prizeEn : t.prize; }
             function getTier(n) { let t = null; REWARD_TIERS.forEach(x => { if ((n || 0) >= x.min) t = x; }); return t; }
             function getNextTier(n) { return REWARD_TIERS.find(x => (n || 0) < x.min) || null; }
-            function fireText(n) { n = n || 0; const t = getTier(n); return `🔥 ${n}` + (t ? ` ${t.icon}${t.name}` : ''); }
+            function fireText(n) { n = n || 0; const t = getTier(n); return `🔥 ${n}` + (t ? ` ${t.icon}${tName(t)}` : ''); }
         let currentUser = null;
         let currentTab = 'dashboard';
         let activePracticeSubTab = 'public';
@@ -1132,7 +1134,7 @@
               const semLabel = currentSemester ? `${esc(currentSemester.name)}（至 ${currentSemester.end_date}）` : '尚未設定學期';
               const ladder = REWARD_TIERS.map(t => `
                 <div class="flex items-center justify-between text-xs py-1 ${n >= t.min ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}">
-                  <span>${t.icon} ${t.name}（${t.min} 次）</span><span>${n >= t.min ? '✅ ' : ''}${t.prize}</span>
+                  <span>${t.icon} ${tName(t)}（${t.min} 次）</span><span>${n >= t.min ? '✅ ' : ''}${tPrize(t)}</span>
                 </div>`).join('');
             
               container.innerHTML = `
@@ -1141,9 +1143,9 @@
                     <p class="text-xs font-semibold text-orange-700">本學期團練出席　${semLabel}</p>
                     <div class="text-2xl leading-snug mt-2 break-all">${flames}</div>
                     <p class="font-bold text-3xl text-zinc-900 mt-1">${n} <span class="text-sm font-medium text-zinc-500">次</span></p>
-                    <p class="text-xs text-zinc-600 mt-1">${tier ? `目前等級：${tier.icon} ${tier.name}` : '再簽到幾次就能拿到第一個獎勵！'}</p>
+                    <p class="text-xs text-zinc-600 mt-1">${tier ? `目前等級：${tier.icon} ${tName(tier)}` : '再簽到幾次就能拿到第一個獎勵！'}</p>
                     <div class="h-2 bg-orange-100 rounded-full overflow-hidden mt-3"><div class="h-2 bg-orange-500 rounded-full" style="width:${pct}%"></div></div>
-                    <p class="text-xs text-zinc-500 mt-1">${next ? `再 ${next.min - n} 次可獲得「${next.prize}」` : '已達最高等級 🎉'}</p>
+                    <p class="text-xs text-zinc-500 mt-1">${next ? `再 ${next.min - n} 次可獲得「${tPrize(next)}」` : '已達最高等級 🎉'}</p>
                   </div>
             
                   <div class="p-5 bg-zinc-50 rounded-2xl border border-zinc-200 text-center space-y-3">
@@ -1584,7 +1586,7 @@
                     const t = getTier(m.attendance);
                     return `<div class="flex items-center justify-between p-2 rounded-xl bg-zinc-50 border border-zinc-200 text-xs">
                       <div><span class="font-bold text-zinc-900">${esc(m.name)}</span><span class="ml-1 text-zinc-500">🔥 ${m.attendance}</span></div>
-                      <div class="text-right"><div class="font-semibold">${t.icon} ${t.name}</div><div class="text-zinc-400">${t.prize}</div></div>
+                      <div class="text-right"><div class="font-semibold">${t.icon} ${tName(t)}</div><div class="text-zinc-400">${tPrize(t)}</div></div>
                     </div>`;
                   }).join('')
                 : `<p class="text-xs text-zinc-400 text-center py-4">本學期還沒有人達到獎勵門檻</p>`;
@@ -1790,6 +1792,13 @@
               '還沒有留言，來當第一個吧':'No comments yet. Be the first!',
               '確定要刪除這則留言？':'Delete this comment?','請先輸入留言內容':'Please enter a comment',
               '留言失敗：':'Comment failed: ',
+              '尚未設定學期':'No semester set','本學期還沒有人達到獎勵門檻':'No one has reached a reward yet',
+              '再簽到幾次就能拿到第一個獎勵！':'Check in a few more times to earn your first reward!',
+              '已達最高等級 🎉':'Top tier reached 🎉',
+              '開啟新學期（🔥 歸零，舊紀錄保留）':'Start a new semester (🔥 resets, history kept)',
+              '同時把所有在籍社員的社費重設為「未繳交」':'Also reset all active members\' fees to "Unpaid"',
+              '建立並切換到新學期':'Create and switch to new semester',
+              '學期名稱，例如 115-2':'Semester name, e.g. 115-2',
                     };
         
         const I18N_PATTERNS = [
@@ -1811,7 +1820,13 @@
           [/^註冊失敗：(.*)$/, 'Sign-up failed: $1'],
           [/^照片上傳失敗：(.*)$/, 'Photo upload failed: $1'],
           [/^發布失敗：(.*)$/, 'Post failed: $1'],
-          [/^留言（(\d+)）$/, 'Comments ($1)']
+          [/^留言（(\d+)）$/, 'Comments ($1)'],
+          [/^本學期團練出席\s+(.+)（至 (.+)）$/, 'This semester\'s attendance  $1 (until $2)'],
+          [/^目前等級：(.+)$/, 'Current tier: $1'],
+          [/^再 (\d+) 次可獲得「(.+)」$/, '$1 more to get "$2"'],
+          [/^(\S+) (.+)（(\d+) 次）$/, '$1 $2 ($3 times)'],
+          [/^學期 (.+)$/, 'Semester $1'],
+          [/^目前學期：(.+)（(.+) ～ (.+)）$/, 'Current semester: $1 ($2 – $3)']
         ];
         
         // 翻譯一段字串（也可用在 confirm() 之類）

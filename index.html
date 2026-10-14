@@ -545,10 +545,10 @@
             
             // 獎勵等級：想改門檻或獎品，只改這裡
             const REWARD_TIERS = [
-              { min: 3,  icon: '🥉', name: '暖身新星', prize: '社團貼紙' },
-              { min: 6,  icon: '🥈', name: '穩定火力', prize: '飲料兌換券' },
-              { min: 10, icon: '🥇', name: '烈焰達人', prize: '社團小禮物' },
-              { min: 14, icon: '👑', name: '全勤火神', prize: '學期大獎抽獎資格' }
+              { min: 4,  icon: '🥉', name: '暖身新星', prize: '社團貼紙' },
+              { min: 7,  icon: '🥈', name: '穩定火力', prize: '長輩圖貼紙' },
+              { min: 9,  icon: '🥇', name: '烈焰達人', prize: '明信片' },
+              { min: 11, icon: '👑', name: '全勤火神', prize: '神祕小禮物' }
             ];
             function getTier(n) { let t = null; REWARD_TIERS.forEach(x => { if ((n || 0) >= x.min) t = x; }); return t; }
             function getNextTier(n) { return REWARD_TIERS.find(x => (n || 0) < x.min) || null; }
